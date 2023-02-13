@@ -1,10 +1,10 @@
-package org.example.Service;
+package org.example.dao;
 
 import org.example.Model.Employee;
 
 import java.util.List;
 
-public interface EmployeeService {
+public interface EmployeeDao {
     List<Employee> getAllEmployees();
 
     Employee getEmployeeByID(int empID);

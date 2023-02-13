@@ -1,10 +1,24 @@
 package org.example.Model;
 
+import jakarta.persistence.*;
+
+@Entity(name = "tbl_employee")
+@Table(name = "tbl_employee")
 public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "empID")
     private int empID;
+    @Column(name = "name")
     private String name;
+    @Column(name = "address")
     private String address;
+    @Column(name = "phone")
     private String phone;
+
+    public Employee() {
+    }
 
     public Employee(int empID, String name, String address, String phone) {
         this.empID = empID;
