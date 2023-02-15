@@ -1,6 +1,7 @@
 package org.example.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity(name = "tbl_employee")
 @Table(name = "tbl_employee")
@@ -11,6 +12,7 @@ public class Employee {
     @Column(name = "empID")
     private int empID;
     @Column(name = "name")
+    @NotNull(message = "name found NULL")
     private String name;
     @Column(name = "address")
     private String address;
@@ -58,4 +60,5 @@ public class Employee {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 }

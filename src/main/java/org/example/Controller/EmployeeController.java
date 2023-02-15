@@ -1,12 +1,18 @@
 package org.example.Controller;
 
+import org.example.Handler.Exception.ApiRequestException;
 import org.example.Model.CommonResponse;
 import org.example.Model.Employee;
+import org.example.Model.GetAllResponse;
+import org.example.Model.GetEmployeeData;
 import org.example.Service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -65,37 +71,97 @@ public class EmployeeController {
     }
 
     @PostMapping("/getAllEmployees")
-    public List<Employee> getAllEmployees() {
+    public ResponseEntity<?> getAllEmployees() {
 
-        return employeeService.getAllEmployees();
+
+        if (employeeService.getAllEmployees() == null) {
+            throw new ApiRequestException("No record found");
+        } else {
+            GetAllResponse response = new GetAllResponse();
+            response.statusCode = HttpStatus.OK.value();
+            response.data = employeeService.getAllEmployees();
+            return ResponseEntity.ok(response);
+        }
+
     }
 
 
     @PostMapping("/getEmployeeByID")
-    public Employee getEmployeeByID(int empID) {
-        return employeeService.getEmployeeByID(empID);
+    public ResponseEntity<?> getEmployeeByID(String empID) {
+        //return employeeService.getEmployeeByID(empID);
+//        Employee employee = new Employee();
+//        employee = employeeService.getEmployeeByID(empID);
+//        if (TextUt) {
+//        } else {
+//        }
+//        throw new ApiRequestException("ffffff exception");
+
+        if (empID.isEmpty()) {
+//            CommonResponse response = new CommonResponse();
+//            response.message = "Invalid employee ID";
+//            return ResponseEntity.ok(response);
+            throw new ApiRequestException("Invalid employee ID");
+        } else {
+            Employee response = employeeService.getEmployeeByID(Integer.parseInt(empID));
+
+            if (response != null) {
+                GetEmployeeData commonResponse = new GetEmployeeData();
+                commonResponse.statusCode = HttpStatus.OK.value();
+                commonResponse.employee = response;
+                return ResponseEntity.ok(commonResponse);
+            } else {
+                throw new ApiRequestException("No record found");
+            }
+
+
+        }
+
 
     }
 
     @PostMapping("/addEmployee")
-    public CommonResponse addEmployee(Employee employee) {
-        employeeService.addEmployee(employee);
+    public ResponseEntity<?> addEmployee(Employee employee) {
 
-        System.out.println(employee.toString());
+        if (employee.getName().isEmpty() || employee.getPhone().isEmpty() || employee.getAddress().isEmpty()) {
+            String value = "";
 
-        CommonResponse response = new CommonResponse();
-        response.message = "successfully added";
+            if (employee.getName().isEmpty()) {
+                value = "name";
+            } else if (employee.getPhone().isEmpty()) {
+                value = "phone";
+            } else if (employee.getAddress().isEmpty()) {
+                value = "address";
+            }
+            throw new ApiRequestException(value + " empty");
 
-        return response;
+        } else {
+            CommonResponse response = new CommonResponse();
+            employeeService.addEmployee(employee);
+            response.statusCode = HttpStatus.OK.value();
+            response.message = "successfully added";
+            return ResponseEntity.ok(response);
+        }
+
+
     }
 
     @PostMapping("/deleteEmployee")
-    public CommonResponse addEmployee(int empID) {
-        employeeService.deleteEmployee(empID);
+    public ResponseEntity<?> deleteEmployee(String empID) {
 
-        CommonResponse response = new CommonResponse();
-        response.message = "successfully deleted";
 
-        return response;
+        if (empID.isEmpty()) {
+            throw new ApiRequestException("Invalid employee ID");
+
+        } else {
+            CommonResponse response = new CommonResponse();
+            employeeService.deleteEmployee(Integer.parseInt(empID));
+            response.statusCode = HttpStatus.OK.value();
+            response.message = "successfully deleted";
+            return ResponseEntity.ok(response);
+        }
+
+        //response.message = empID;
+
+
     }
 }

@@ -2,6 +2,7 @@ package org.example.dao;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
+import org.example.Handler.Exception.ApiRequestException;
 import org.example.Model.Employee;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -47,6 +48,11 @@ public class EmployeeDaoImplementation implements EmployeeDao {
     public void deleteEmployee(int empID) {
         Session currenSession = entityManager.unwrap(Session.class);
         Employee employee = currenSession.get(Employee.class, empID);
-        currenSession.delete(employee);
+
+        if (employee != null) {
+            currenSession.delete(employee);
+        } else {
+            throw new ApiRequestException("No record found");
+        }
     }
 }
