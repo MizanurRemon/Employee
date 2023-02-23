@@ -18,41 +18,6 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class EmployeeController {
 
-//    @Autowired //for mapping instead of creating objects
-//    EmployeeServiceImplementation employeeServiceImplementation;
-//
-//    @RequestMapping("/")
-//    public CommonResponse test() {
-//        CommonResponse commonResponse = new CommonResponse();
-//        commonResponse.message = "server running";
-//        return commonResponse;
-//    }
-//
-//
-//    @RequestMapping(method = RequestMethod.POST, value = "/getAllEmployees")
-//    public List<Employee> getAllEmployees() {
-//        return employeeServiceImplementation.getAllEmployees();
-//
-//    }
-//
-//
-//    @RequestMapping("/getEmployeeByID")
-//    public Employee getEmployeeByID(@RequestParam(value = "empID", defaultValue = "null") int empID) {
-//        return employeeServiceImplementation.getEmployeeByID(empID);
-//
-//    }
-//
-//    @RequestMapping(method = RequestMethod.POST, value = "/addEmployee")
-//    public CommonResponse addEmployee(@RequestBody Employee employee) {
-//
-//        employeeServiceImplementation.addEmployee(employee);
-//
-//        CommonResponse commonResponse = new CommonResponse();
-//        commonResponse.message = "successfully added";
-//
-//        return commonResponse;
-//    }
-
     @Autowired
     private EmployeeService employeeService;
 
@@ -97,22 +62,22 @@ public class EmployeeController {
 //        throw new ApiRequestException("ffffff exception");
 
         if (empID.isEmpty()) {
-//            CommonResponse response = new CommonResponse();
-//            response.message = "Invalid employee ID";
-//            return ResponseEntity.ok(response);
             throw new ApiRequestException("Invalid employee ID");
         } else {
-            Employee response = employeeService.getEmployeeByID(Integer.parseInt(empID));
+            try {
+                Employee response = employeeService.getEmployeeByID(Integer.parseInt(empID));
 
-            if (response != null) {
-                GetEmployeeData commonResponse = new GetEmployeeData();
-                commonResponse.statusCode = HttpStatus.OK.value();
-                commonResponse.employee = response;
-                return ResponseEntity.ok(commonResponse);
-            } else {
-                throw new ApiRequestException("No record found");
+                if (response != null) {
+                    GetEmployeeData commonResponse = new GetEmployeeData();
+                    commonResponse.statusCode = HttpStatus.OK.value();
+                    commonResponse.employee = response;
+                    return ResponseEntity.ok(commonResponse);
+                } else {
+                    throw new ApiRequestException("No record found");
+                }
+            } catch (Exception e) {
+                throw new ApiRequestException("Invalid employee ID");
             }
-
 
         }
 
@@ -136,10 +101,19 @@ public class EmployeeController {
 
         } else {
             CommonResponse response = new CommonResponse();
-            employeeService.addEmployee(employee);
+
             response.statusCode = HttpStatus.OK.value();
-            response.message = "successfully added";
-            return ResponseEntity.ok(response);
+
+            try {
+                if(employeeService.addEmployee(employee)){
+                    response.message = "successfully added";
+                }else {
+                    response.message = "not added";
+                }
+                return ResponseEntity.ok(response);
+            }catch (Exception e){
+                throw new ApiRequestException(e.getMessage());
+            }
         }
 
 

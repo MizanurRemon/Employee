@@ -37,25 +37,36 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 
     @Override
     public List<Employee> getAllEmployees() {
-        Session currentSession = entityManager.unwrap(Session.class);
-        String sqlQuery = "FROM tbl_employee";
-        Query<Employee> query = currentSession.createQuery(sqlQuery, Employee.class);
-        return query.getResultList();
+//        Session currentSession = entityManager.unwrap(Session.class);
+//        String sqlQuery = "FROM tbl_employee";
+//        Query<Employee> query = currentSession.createQuery(sqlQuery, Employee.class);
+//        return query.getResultList();
+
+        String sqlQuery = "SELECT * FROM tbl_employee ORDER BY empID DESC";
+        try {
+            return jdbcTemplate.query(sqlQuery, new RowMapper<Employee>() {
+                @Override
+                public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Employee employee = new Employee();
+                    employee.setEmpID(rs.getInt(Constants.EMPLOYEE_ID));
+                    employee.setName(rs.getString(Constants.NAME));
+                    employee.setAddress(rs.getString(Constants.ADDRESS));
+                    employee.setPhone(rs.getString(Constants.PHONE));
+                    employee.setDate(rs.getDate(Constants.DATE));
+                    return employee;
+                }
+            });
+        }catch (Exception e){
+            throw new ApiRequestException(e.getMessage());
+        }
 
     }
 
 
     @Override
     public List<Employee> getAllEmployeesByPlace(String place) {
-        /*Session currentSession = entityManager.unwrap(Session.class);
-        String sqlQuery = "SELECT e FROM tbl_employee e where e.address = :place";
-        Query<Employee> query = currentSession.createQuery(sqlQuery, Employee.class);
-        query.setParameter("place", place);
-        return query.getResultList();
 
-        return Collections.singletonList(currentSession.get(Employee.class, place));*/
-
-        String sqlQuery = "SELECT * FROM tbl_employee where address=" + "'" + place + "'";
+        String sqlQuery = "SELECT * FROM tbl_employee where address=" + "'" + place + "'"+" ORDER BY empID DESC";
         return namedParameterJdbcTemplate.query(sqlQuery, new RowMapper<Employee>() {
             @Override
             public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -96,9 +107,18 @@ public class EmployeeDaoImplementation implements EmployeeDao {
     }
 
     @Override
-    public void addEmployee(Employee employee) {
-        Session currentSession = entityManager.unwrap(Session.class);
-        currentSession.save(employee);
+    public boolean addEmployee(Employee employee) {
+//        Session currentSession = entityManager.unwrap(Session.class);
+//        currentSession.save(employee);
+
+        String sqlQuery = "INSERT into " + Constants.TBL_EMPLOYEE + " (name, address, phone) values(?,?,?)";
+
+        return jdbcTemplate.update(
+                sqlQuery,
+                employee.getName(),
+                employee.getAddress(),
+                employee.getPhone()
+        ) == 1;
     }
 
     @Override
@@ -116,18 +136,26 @@ public class EmployeeDaoImplementation implements EmployeeDao {
     @Override
     public boolean updateEmployee(Employee employee) {
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
+       /* MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", employee.getEmpID());
         params.addValue("name", employee.getName());
         params.addValue("address", employee.getAddress());
+        params.addValue("phone", employee.getPhone());*/
 
 
-        String query = "UPDATE " + Constants.TBL_EMPLOYEE + " SET name = ?,address =? WHERE empID = ?";
+        String query = "UPDATE " + Constants.TBL_EMPLOYEE + " SET name = ?,address =?, phone=? WHERE empID = ?";
 
-        // String deleteQuery = "DELETE from " + Constants.TBL_EMPLOYEE + " WHERE empID = :id";
-
-        //return namedParameterJdbcTemplate.update(query, params) == 1;
-        return jdbcTemplate.update(query, employee.getName(), employee.getAddress(), employee.getEmpID()) == 1;
+        try {
+            return jdbcTemplate.update(
+                    query,
+                    employee.getName(),
+                    employee.getAddress(),
+                    employee.getPhone(),
+                    employee.getEmpID()
+            ) == 1;
+        }catch (Exception e){
+            throw new ApiRequestException(e.getMessage());
+        }
         //return true
     }
 

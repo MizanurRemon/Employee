@@ -1,6 +1,5 @@
 package org.example.Service;
 
-import org.example.Model.CommonResponse;
 import org.example.Model.Employee;
 import org.example.dao.EmployeeDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,10 @@ public class EmployeeServiceImplementation implements EmployeeService {
 
 
     @Override
-    public void addEmployee(Employee employee) {
-        employeeDao.addEmployee(employee);
+    public boolean addEmployee(Employee employee) {
+        //employeeDao.addEmployee(employee);
 
+        return employeeDao.addEmployee(employee);
     }
 
 
