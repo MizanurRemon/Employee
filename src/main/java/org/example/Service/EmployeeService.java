@@ -12,4 +12,6 @@ public interface EmployeeService {
     void addEmployee(Employee employee);
 
     void deleteEmployee(int empID);
+
+    List<Employee> getAllEmployeesByPlace(String place);
 }

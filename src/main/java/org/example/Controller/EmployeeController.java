@@ -164,4 +164,19 @@ public class EmployeeController {
 
 
     }
+
+    @PostMapping("/getAllEmployeesByPlace")
+    public ResponseEntity<?> getAllEmployees(String place) {
+
+
+        if (employeeService.getAllEmployeesByPlace(place) == null) {
+            throw new ApiRequestException("No record found");
+        } else {
+            GetAllResponse response = new GetAllResponse();
+            response.statusCode = HttpStatus.OK.value();
+            response.data = employeeService.getAllEmployeesByPlace(place);
+            return ResponseEntity.ok(response);
+        }
+
+    }
 }

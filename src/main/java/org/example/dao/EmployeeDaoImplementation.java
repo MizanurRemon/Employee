@@ -1,6 +1,5 @@
 package org.example.dao;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import org.example.Handler.Exception.ApiRequestException;
 import org.example.Model.Employee;
@@ -9,7 +8,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -27,6 +26,20 @@ public class EmployeeDaoImplementation implements EmployeeDao {
         String sqlQuery = "FROM tbl_employee";
         Query<Employee> query = currentSession.createQuery(sqlQuery, Employee.class);
         return query.getResultList();
+
+    }
+
+
+    @Override
+    public List<Employee> getAllEmployeesByPlace(String place) {
+        Session currentSession = entityManager.unwrap(Session.class);
+        String sqlQuery = "SELECT e FROM tbl_employee e where e.address = :place";
+        Query<Employee> query = currentSession.createQuery(sqlQuery, Employee.class);
+        query.setParameter("place", place);
+        return query.getResultList();
+
+        //return Collections.singletonList(currentSession.get(Employee.class, place));
+
 
     }
 
