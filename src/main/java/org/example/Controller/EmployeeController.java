@@ -179,4 +179,39 @@ public class EmployeeController {
         }
 
     }
+
+
+    @PostMapping("/updateEmployee")
+    public ResponseEntity<?> updateEmployee(Employee employee) {
+        try {
+            if (employee.getName().isEmpty() || employee.getPhone().isEmpty() || employee.getAddress().isEmpty() || String.valueOf(employee.getEmpID()).isEmpty()) {
+                String value = "";
+                if (employee.getName().isEmpty()) {
+                    value = "name";
+                } else if (employee.getPhone().isEmpty()) {
+                    value = "phone";
+                } else if (employee.getAddress().isEmpty()) {
+                    value = "address";
+                } else if (employee.getEmpID() == 0) {
+                    value = "empID";
+                }
+                throw new ApiRequestException(value + " empty");
+
+            } else {
+                CommonResponse response = new CommonResponse();
+                response.statusCode = HttpStatus.OK.value();
+                if (employeeService.updateEmployee(employee)) {
+                    response.message = "employee update completed";
+                } else {
+                    response.message = "employee update failed";
+                }
+
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+
+
+    }
 }

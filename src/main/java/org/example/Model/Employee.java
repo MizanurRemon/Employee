@@ -1,7 +1,11 @@
 package org.example.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity(name = "tbl_employee")
 @Table(name = "tbl_employee")
@@ -12,12 +16,17 @@ public class Employee {
     @Column(name = "empID")
     private int empID;
     @Column(name = "name")
-    @NotNull(message = "name found NULL")
     private String name;
     @Column(name = "address")
     private String address;
     @Column(name = "phone")
     private String phone;
+
+    @Column(name = "date")
+    @CreationTimestamp
+    @JsonFormat(pattern="dd MMM, yyyy")
+    private Date date;
+
 
     public Employee() {
     }
@@ -61,4 +70,11 @@ public class Employee {
         this.phone = phone;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

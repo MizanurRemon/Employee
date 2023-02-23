@@ -14,4 +14,6 @@ public interface EmployeeService {
     void deleteEmployee(int empID);
 
     List<Employee> getAllEmployeesByPlace(String place);
+
+    boolean updateEmployee(Employee employee);
 }

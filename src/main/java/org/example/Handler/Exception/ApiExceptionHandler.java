@@ -16,7 +16,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<Object> apiRequestException(ApiRequestException e) {
 
         //create payload containing exception details
-        HttpStatus httpStatus = HttpStatus.NOT_ACCEPTABLE;
+        //HttpStatus httpStatus = HttpStatus.NOT_ACCEPTABLE;
         int statusCode = HttpStatus.OK.value();
         ErrorItem errorItem = new ErrorItem(
                 statusCode,
